@@ -22,6 +22,7 @@ message AnyChainBlock {
 message FetchBlockRequest {
   repeated BlockRef ref = 1; // List of block references.
   google.protobuf.FieldMask field_mask = 2; // Field mask to selectively return fields.
+  bool raw = 3; // Request block be returned in raw format.
 }
 
 // Response containing the fetched blocks.
@@ -34,6 +35,7 @@ message DumpHistoryRequest {
   BlockRef start_token = 2; // Starting point for the block history dump.
   uint32 max_items = 3; // Maximum number of items to return.
   google.protobuf.FieldMask field_mask = 4; // Field mask to selectively return fields.
+  bool raw = 5; // Request blocks be returned in raw format.
 }
 
 // Response containing the dumped block history.
@@ -45,6 +47,7 @@ message DumpHistoryResponse {
 // Request to follow the tip of the blockchain.
 message FollowTipRequest {
   repeated BlockRef intersect = 1; // List of block references to find the intersection.
+  bool raw = 2; // Request blocks be returned in raw format.
 }
 
 // Response containing the action to perform while following the tip.
