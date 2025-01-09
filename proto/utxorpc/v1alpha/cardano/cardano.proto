@@ -107,6 +107,88 @@ message Tx {
   bool successful = 11; // Flag indicating whether the transaction was successful
   AuxData auxiliary = 12; // Auxiliary data not directly tied to the validation process
   bytes hash = 13; // Hash of the transaction that serves as main identifier
+  repeated GovernanceActionProposal proposals = 14; // List of governance actions proposed
+}
+
+// Define a governance action proposal
+message GovernanceActionProposal {
+  uint64 deposit = 1; // The amount deposited for the governance action
+  StakeCredential reward_account = 2; // The reward account the deposit should be returned to
+  GovernanceAction gov_action = 3;
+  Anchor anchor = 4;
+}
+
+// Define a Governance Action
+message GovernanceAction {
+  oneof governance_action {
+    ParameterChangeAction parameter_change_action = 1; // Change on-chain parameters
+    HardForkInitiationAction hard_fork_initiation_action = 2; // Initiate a Hard Fork
+    TreasuryWithdrawalAction treasury_withdrawal_action = 3; // Withdraw from the Treasury
+    NoConfidenceAction no_confidence_action = 4; //
+    UpdateCommitteeAction update_committee_action = 5; // Update the Constitution Committee
+    NewConstitutionAction new_constitution_action = 6; // Replace the Constitution
+    uint32 info_action = 7; // Info action should just be the integer number 6
+  }
+}
+
+message GovernanceActionId {
+  bytes transaction_id = 1;
+  uint32 governance_action_index = 2;
+}
+
+message ParameterChangeAction {
+  uint64 action_type = 1; // Expected to be 0 for ParameterChangeAction
+  GovernanceActionId gov_action_id = 2;
+  PParams protocol_param_update = 3; // The updates proposed
+  bytes policy_hash = 4;
+}
+
+message HardForkInitiationAction {
+  uint64 action_type = 1; // Expected to be 1 for HardForkInitiationAction
+  GovernanceActionId gov_action_id = 2;
+  ProtocolVersion protocol_version = 3; // The protocol version to fork to
+}
+
+message TreasuryWithdrawalAction {
+  uint64 action_type = 1; // Expected to be 2 for TreasuryWithdrawals
+  WithdrawalAmount withdrawals = 2; // A map of the withdrawals to make
+  bytes policy_hash = 4;
+}
+
+message WithdrawalAmount {
+  bytes reward_account = 1;
+  uint64 coin = 2;
+}
+
+message NoConfidenceAction {
+  uint64 action_type = 1; // Expected to be 3 for a NoConfidence Action
+  GovernanceActionId gov_action_id = 2;
+}
+
+message UpdateCommitteeAction {
+  uint64 action_type = 1; // Expected to be 4 for a UpdateCommittee Action
+  GovernanceActionId gov_action_id = 2;
+  repeated StakeCredential remove_committee_credentials = 3; // Committee members to remove (if any)
+  repeated NewCommitteeCredentials new_committee_credentials = 4; // The new committee members
+  RationalNumber new_committee_threshold = 5; // The required threshold for the committee
+}
+
+message NewConstitutionAction {
+  uint64 action_type = 1; // Expected to be 5 for NewConstitutionAction
+  GovernanceActionId gov_action_id = 2;
+  Constitution constitution = 3; // The Constitution proposed
+}
+
+message Constitution {
+  Anchor anchor = 1; // Anchor to the new document
+  bytes hash = 2; // Hash of the document
+}
+
+// The new committee credential are passed as a map where the key is the committee cold credential hash
+// and the value is the expiration epoch for that credential
+message NewCommitteeCredentials {
+  StakeCredential committee_cold_credential = 1;
+  uint32 expires_epoch = 2;
 }
 
 // Contains the header information for a block.
