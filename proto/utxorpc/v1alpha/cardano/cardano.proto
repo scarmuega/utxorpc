@@ -329,12 +329,32 @@ message RationalNumber {
   uint32 denominator = 2;
 }
 
+
+// Represents a single host address relay
+message SingleHostAddressRelay {
+  bytes ipv4 = 1;
+  bytes ipv6 = 2;
+  uint32 port = 3;
+}
+
+// Represents a single hostname relay
+message SingleHostNameRelay {
+  string dns_name = 1;
+  uint32 port = 2;
+}
+
+// Represents a multi hostname relay
+message MultiHostNameRelay {
+  string dns_name = 1;
+}
+
 // Represents a relay in Cardano.
 message Relay {
-  bytes ip_v4 = 1;
-  bytes ip_v6 = 2;
-  string dns_name = 3;
-  uint32 port = 4;
+  oneof relay {
+    SingleHostAddressRelay single_host_addr = 1; // Single host address relay.
+    SingleHostNameRelay single_host_name = 2; // Single host name relay.
+    MultiHostNameRelay multi_host_name = 3; // Multi host name relay.
+  }
 }
 
 // Represents pool metadata in Cardano.

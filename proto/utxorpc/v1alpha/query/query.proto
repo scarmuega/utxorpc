@@ -109,12 +109,30 @@ message ReadDataResponse {
   ChainPoint ledger_tip = 2; // The chain point that represent the ledger current position.
 }
 
+// Request to get pool relays.
+message ReadPoolRelaysRequest {
+  repeated bytes pool_keyhash = 1; // List of pool key hashes.
+}
+
+// An evenlope that holds a relay for any of the compatible chains
+message AnyChainRelay {
+  repeated oneof relays {
+    utxorpc.v1alpha.cardano.Relay cardano = 1; // A cardano relay
+  }
+}
+
+// Response containing the chain parameters
+message ReadPoolRelaysResponse {
+  repeated AnyChainRelay relays = 1;
+}
+
 // Service definition for querying the state of the chain.
 service QueryService {
   rpc ReadParams(ReadParamsRequest) returns (ReadParamsResponse); // Get overall chain state.
   rpc ReadUtxos(ReadUtxosRequest) returns (ReadUtxosResponse); // Read specific UTxOs by reference.
   rpc SearchUtxos(SearchUtxosRequest) returns (SearchUtxosResponse); // Search for UTxO based on a pattern.
   rpc ReadData(ReadDataRequest) returns (ReadDataResponse); // Read specific datum by hash
+  rpc ReadPoolRelays(ReadPoolRelaysRequest) returns (ReadPoolRelaysResponse); // Get pool relays. 
 
   // TODO: decide if we want to expand the scope
   // rpc DumpUtxos(ReadUtxosRequest) returns (stream ReadUtxosResponse); // Dump all available utxos
